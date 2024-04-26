@@ -184,6 +184,34 @@ class Webui_config:
         data["model"] = os.path.join(dataset_path, data["model"])
         return cls(**data)
 
+class Api_config:
+    """API 配置"""
+
+    def __init__(
+        self,
+        device: str,
+        model: str,
+        config_path: str,
+        language_identification_library: str,
+        url: str,
+        port: int = 7860,
+        debug: bool = False,
+    ):
+        self.device: str = device
+        self.model: str = model  # 端口号
+        self.config_path: str = config_path
+        self.url: str = url
+        self.port: int = port  # 是否开启debug模式
+        self.debug: bool = debug  # 配置文件路径
+        self.language_identification_library: str = (
+            language_identification_library  # 语种识别库
+        )
+
+    @classmethod
+    def from_dict(cls, dataset_path: str, data: Dict[str, any]):
+        data["config_path"] = os.path.join(dataset_path, data["config_path"])
+        data["model"] = os.path.join(dataset_path, data["model"])
+        return cls(**data)
 
 class Server_config:
     def __init__(
@@ -196,7 +224,6 @@ class Server_config:
     @classmethod
     def from_dict(cls, data: Dict[str, any]):
         return cls(**data)
-
 
 class Translate_config:
     """翻译api配置"""
@@ -245,6 +272,9 @@ class Config:
             )
             self.webui_config: Webui_config = Webui_config.from_dict(
                 dataset_path, yaml_config["webui"]
+            )
+            self.api_config: Api_config = Api_config.from_dict(
+                dataset_path, yaml_config["api"]
             )
             self.server_config: Server_config = Server_config.from_dict(
                 yaml_config["server"]
