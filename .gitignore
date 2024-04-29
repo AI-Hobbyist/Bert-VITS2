@@ -159,9 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-.DS_Store
-/models
-/logs
+
 
 filelists/*
 !/filelists/esd.list
@@ -186,3 +184,5 @@ logs/
 Data/*
 /onnx
 /.vs
+models/*
+tmp/*

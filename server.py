@@ -7,6 +7,7 @@ from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory
 from tools.sentence import split_by_language
 import soundfile as sf
+app_key = os.getenv('app_key')
 
 logging.getLogger("numba").setLevel(logging.WARNING)
 logging.getLogger("markdown_it").setLevel(logging.WARNING)
@@ -405,6 +406,7 @@ def web_infer():
             languages = ["ZH", "JP", "EN", "mix", "auto"]
             url = None
             data = request.get_json()
+            key = text = str(data["app_key"])
             text = str(data["text"])
             speaker = str(data["speaker"])
             sdp_ratio = float(data["sdp_ratio"])
@@ -417,7 +419,9 @@ def web_infer():
             interval_between_para = float(data["interval_between_para"])
             style_text = str(data["style_text"])
             style_weight = float(data["style_weight"])
-            if speaker not in speakers:
+            if key != app_key:
+                msg = f"app_key 不正确！"
+            elif speaker not in speakers:
                 msg = f"指定的说话人 {speaker} 不存在！"
             elif language not in languages:
                 msg = f"指定的语言 {language} 不存在！"
@@ -439,6 +443,12 @@ def web_infer():
 @app.route('/<audio>')
 def send_audio(audio):
     return send_from_directory('./tmp', audio)
+
+@app.route('/spks')
+def send_spks():
+    speaker_ids = hps.data.spk2id
+    speakers = list(speaker_ids.keys())
+    return speakers
     
 if __name__ == "__main__":
     if not os.path.exists("./tmp"):
@@ -452,4 +462,4 @@ if __name__ == "__main__":
     net_g = get_net_g(
         model_path=config.api_config.model, version=version, device=device, hps=hps
     )
-    app.run(host='0.0.0.0',debug=True,port=config.api_config.port)
+    app.run(host='0.0.0.0',debug=False,port=config.api_config.port)
